@@ -1,4 +1,4 @@
-module net2dev_addr::polkalend {
+module peer_purse_addr::peer_pulse {
     use std::signer;
     use std::vector;
     use aptos_framework::event;
@@ -107,44 +107,44 @@ module net2dev_addr::polkalend {
         platform.min_collateral_ratio
     }
 
-    // #[view]
-    // public fun get_liquidity(platform_addr: address, lender: address, token: address): u64 acquires LendingPlatform {
-    //     let platform = borrow_global<LendingPlatform>(platform_addr);
-    //     if (table::contains(&platform.liquidity_pool, lender)) {
-    //         let token_table = table::borrow(&platform.liquidity_pool, lender);
-    //         *table::borrow_with_default(token_table, token, &0)
-    //     } else {
-    //         0
-    //     }
-    // }
+    #[view]
+    public fun get_liquidity(platform_addr: address, lender: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(platform_addr);
+        if (table::contains(&platform.liquidity_pool, lender)) {
+            let token_table = table::borrow(&platform.liquidity_pool, lender);
+            *table::borrow_with_default(token_table, token, &0)
+        } else {
+            0
+        }
+    }
 
-    // #[view]
-    // public fun get_debt(platform_addr: address, borrower: address, token: address): u64 acquires LendingPlatform {
-    //     let platform = borrow_global<LendingPlatform>(platform_addr);
-    //     if (table::contains(&platform.debt, borrower)) {
-    //         let token_table = table::borrow(&platform.debt, borrower);
-    //         *table::borrow_with_default(token_table, token, &0)
-    //     } else {
-    //         0
-    //     }
-    // }
+    #[view]
+    public fun get_debt(platform_addr: address, borrower: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(platform_addr);
+        if (table::contains(&platform.debt, borrower)) {
+            let token_table = table::borrow(&platform.debt, borrower);
+            *table::borrow_with_default(token_table, token, &0)
+        } else {
+            0
+        }
+    }
 
-    // #[view]
-    // public fun get_collateral(platform_addr: address, borrower: address, token: address): u64 acquires LendingPlatform {
-    //     let platform = borrow_global<LendingPlatform>(platform_addr);
-    //     if (table::contains(&platform.collateral, borrower)) {
-    //         let token_table = table::borrow(&platform.collateral, borrower);
-    //         *table::borrow_with_default(token_table, token, &0)
-    //     } else {
-    //         0
-    //     }
-    // }
+    #[view]
+    public fun get_collateral(platform_addr: address, borrower: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(platform_addr);
+        if (table::contains(&platform.collateral, borrower)) {
+            let token_table = table::borrow(&platform.collateral, borrower);
+            *table::borrow_with_default(token_table, token, &0)
+        } else {
+            0
+        }
+    }
 
-    // #[view]
-    // public fun get_active_loans(platform_addr: address, borrower: address): vector<Loan> acquires LendingPlatform {
-    //     let platform = borrow_global<LendingPlatform>(platform_addr);
-    //     *table::borrow_with_default(&platform.active_loans, borrower, &vector::empty())
-    // }
+    #[view]
+    public fun get_active_loans(platform_addr: address, borrower: address): vector<Loan> acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(platform_addr);
+        *table::borrow_with_default(&platform.active_loans, borrower, &vector::empty())
+    }
 
     // // Create a loan by depositing liquidity
     // public entry fun create_loan(
