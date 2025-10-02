@@ -449,41 +449,66 @@ module peer_purse_addr::peer_pulse {
         });
     }
 
+    #[test_only]
+use aptos_framework::aptos_coin;
+
 #[test_only]
 public fun initialize_for_test(account: &signer) {
     initialize(account);
 }
 
-#[test(account = @peer_purse_addr, lender = @0x456)]
-public fun test_create_loan(account: &signer, lender: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
-    initialize_for_test(account);
-    let amount = 100;
-    let duration = 86400;
-
-    // Register lender for AptosCoin
-    let lender_addr = signer::address_of(lender);
-    if (!coin::is_account_registered<AptosCoin>(lender_addr)) {
-        coin::register<AptosCoin>(lender);
+#[test_only]
+fun setup_coin_for_test(admin: &signer) {
+    // Initialize AptosCoin for testing (assumes admin is 0x1 or has authority)
+    if (!coin::is_coin_initialized<AptosCoin>()) {
+        let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(admin);
+        coin::destroy_burn_cap<AptosCoin>(burn_cap);
+        coin::destroy_mint_cap<AptosCoin>(mint_cap);
     };
-
-    // Simulate minting by depositing coins to lender (for testing purposes)
-    // In a real test, you might use a test-specific coin minting function or faucet
-    let platform_addr = borrow_global<LendingPlatform>(@peer_purse_addr).resource_account;
-    let cap = borrow_global<SignerCapability>(@peer_purse_addr);
-    let platform_signer = account::create_signer_with_capability(&cap.cap);
-    coin::register<AptosCoin>(&platform_signer); // Ensure platform is registered
-    // Simulate depositing coins to lender for testing
-    // Note: In a real test, use a test faucet or minting mechanism
-    // For this example, assume coins are available in the platform account
-    coin::transfer<AptosCoin>(&platform_signer, lender_addr, amount);
-
-    create_loan(lender, @aptos_framework, amount, duration);
-    let liquidity = get_liquidity(lender_addr, @aptos_framework);
-    assert!(liquidity == amount, 0);
 }
 
-// #[test(account = @peer_purse_addr, borrower = @0x789)]
-// public fun test_lock_collateral(account: &signer, borrower: &signer) acquires LendingPlatform,SignerCapability {
+// #[test(account = @0x1, lender = @0x456)]
+// public fun test_create_loan(account: &signer, lender: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+//     // Initialize coin for testing
+//     setup_coin_for_test(account);
+
+//     initialize_for_test(account);
+//     let amount = 100;
+//     let duration = 86400;
+
+//     // Register lender for AptosCoin
+//     let lender_addr = signer::address_of(lender);
+//     if (!coin::is_account_registered<AptosCoin>(lender_addr)) {
+//         coin::register<AptosCoin>(lender);
+//     };
+
+//     // Fund the platform account with AptosCoin
+//     let platform_addr = borrow_global<LendingPlatform>(@peer_purse_addr).resource_account;
+//     let cap = borrow_global<SignerCapability>(@peer_purse_addr);
+//     let platform_signer = account::create_signer_with_capability(&cap.cap);
+//     if (!coin::is_account_registered<AptosCoin>(platform_addr)) {
+//         coin::register<AptosCoin>(&platform_signer);
+//     };
+
+//     // Mint and deposit coins to platform and lender
+//     let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(account);
+//     let coins = coin::mint<AptosCoin>(account, amount);
+//     coin::deposit<AptosCoin>(platform_addr, coins);
+//     let coins = coin::mint<AptosCoin>(account, amount);
+//     coin::deposit<AptosCoin>(lender_addr, coins);
+//     coin::destroy_burn_cap<AptosCoin>(burn_cap);
+//     coin::destroy_mint_cap<AptosCoin>(mint_cap);
+
+//     create_loan(lender, @aptos_framework, amount, duration);
+//     let liquidity = get_liquidity(lender_addr, @aptos_framework);
+//     assert!(liquidity == amount, 0);
+// }
+
+// #[test(account = @0x1, borrower = @0x789)]
+// public fun test_lock_collateral(account: &signer, borrower: &signer) acquires LendingPlatform, SignerCapability {
+//     // Initialize coin for testing
+//     setup_coin_for_test(account);
+
 //     initialize_for_test(account);
 //     let collateral_amount = 150;
 
@@ -493,17 +518,23 @@ public fun test_create_loan(account: &signer, lender: &signer) acquires LendingP
 //         coin::register<AptosCoin>(borrower);
 //     };
 
-//     // Simulate minting by depositing coins to borrower (for testing purposes)
+//     // Fund the platform account with AptosCoin
 //     let platform_addr = borrow_global<LendingPlatform>(@peer_purse_addr).resource_account;
 //     let cap = borrow_global<SignerCapability>(@peer_purse_addr);
 //     let platform_signer = account::create_signer_with_capability(&cap.cap);
-//     coin::register<AptosCoin>(&platform_signer); // Ensure platform is registered
-//     // Simulate depositing coins to borrower for testing
-//     coin::transfer<AptosCoin>(&platform_signer, borrower_addr, collateral_amount);
+//     if (!coin::is_account_registered<AptosCoin>(platform_addr)) {
+//         coin::register<AptosCoin>(&platform_signer);
+//     };
+
+//     // Mint and deposit coins to borrower
+//     let (burn_cap, mint_cap) = aptos_coin::initialize_for_test(account);
+//     let coins = coin::mint<AptosCoin>(account, collateral_amount);
+//     coin::deposit<AptosCoin>(borrower_addr, coins);
+//     coin::destroy_burn_cap<AptosCoin>(burn_cap);
+//     coin::destroy_mint_cap<AptosCoin>(mint_cap);
 
 //     lock_collateral(borrower, @aptos_framework, collateral_amount);
 //     let collateral = get_collateral(borrower_addr, @aptos_framework);
 //     assert!(collateral == collateral_amount, 0);
 // }
-  
 }
