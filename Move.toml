@@ -1,0 +1,16 @@
+[package]
+name = "peer_pulse"
+version = "1.0.0"
+authors = []
+
+[addresses]
+net2dev_addr="d9a0133b75e87fb012f4a419d12f12951628dab2c97d78b104b9e8ae7b2f2aac"
+
+[dev-addresses]
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-framework.git"
+rev = "mainnet"
+subdir = "aptos-framework"
+
+[dev-dependencies]
