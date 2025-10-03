@@ -1,11 +1,11 @@
 // import usdc from "../assets/images/usdc.png";
-import polkadot from "../assets/images/polkadot.png";
-import { ethers } from "ethers";
+import aptos from "../assets/images/aptos.png";
+
 export const tokens = [
   {
-    name: "DOT",
-    address: ethers.ZeroAddress,
-    image: polkadot,
+    name: "APT",
+    address: '0x1',
+    image: aptos,
   },
   // {
   //   name: "USDC",

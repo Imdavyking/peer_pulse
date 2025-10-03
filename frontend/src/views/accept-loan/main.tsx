@@ -4,14 +4,13 @@ import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
-import { useWallet } from "../../context/WalletContext";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
   acceptLoan,
   getCollaterial,
   getLiquidity,
 } from "../../services/blockchain.services";
 import { toast } from "react-toastify";
-import { ss58ToH160 } from "../../utils/helpers";
 
 interface Token {
   name: string;
@@ -33,7 +32,7 @@ export default function AcceptLoanForm() {
     const fetchCollaterial = async () => {
       if (!account) return;
       const collaterial = await getCollaterial({
-        borrower: ss58ToH160(account.address).asHex(),
+        borrower: account.address,
         token: selectedLoanToken.address,
         account,
       });
@@ -49,7 +48,7 @@ export default function AcceptLoanForm() {
   useEffect(() => {
     const fetchDetails = async () => {
       if (!account) return;
-      const lender = ss58ToH160(account.address).asHex();
+      const lender = account.address;
       setLender(lender);
       const balance = await getLiquidity({
         lender,

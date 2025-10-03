@@ -4,14 +4,13 @@ import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
-import { useWallet } from "../../context/WalletContext";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
   getDebt,
   getUserBalance,
   payLoan,
 } from "../../services/blockchain.services";
 import { toast } from "react-toastify";
-import { ss58ToH160 } from "../../utils/helpers";
 
 interface Token {
   name: string;
@@ -32,7 +31,7 @@ export default function PayLoan() {
     const fetchDebt = async () => {
       if (!account) return;
       const debt = await getDebt({
-        borrower: ss58ToH160(account.address).asHex(),
+        borrower: account.address,
         token: selectedLoanToken.address,
         account,
       });
@@ -49,7 +48,7 @@ export default function PayLoan() {
     (async () => {
       if (!account) return;
 
-      setLender(ss58ToH160(account.address).asHex());
+      setLender(account.address);
 
       if (lender === "") return;
 

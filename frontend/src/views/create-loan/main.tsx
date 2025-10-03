@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { tokens } from "../../utils/constants";
 import { toast } from "react-toastify";
 import { createLoan, getUserBalance } from "../../services/blockchain.services";
-import { useWallet } from "../../context/WalletContext";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 import SubmitButton from "../../components/SubmitButton";
 import NumberInput from "../../components/NumberInput";

@@ -112,6 +112,7 @@ module peer_purse_addr::peer_pulse {
         };
     }
 
+
     // Getters
     #[view]
     public fun get_owner(): address acquires LendingPlatform {
@@ -162,6 +163,11 @@ module peer_purse_addr::peer_pulse {
     public fun get_active_loans(borrower: address): vector<Loan> acquires LendingPlatform {
         let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         *table::borrow_with_default(&platform.active_loans, borrower, &vector::empty())
+    }
+
+
+    public entry fun register_aptos_coin(account: &signer) {
+        coin::register<AptosCoin>(account);
     }
 
     // Create a loan by depositing liquidity

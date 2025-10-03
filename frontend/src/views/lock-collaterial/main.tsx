@@ -3,7 +3,7 @@ import { tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
-import { useWallet } from "../../context/WalletContext";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
   getUserBalance,
   lockCollateral,

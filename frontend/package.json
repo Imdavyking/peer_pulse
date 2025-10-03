@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aptos-labs/ts-sdk": "^1.33.2",
+    "@aptos-labs/wallet-adapter-ant-design": "^3.0.23",
+    "@aptos-labs/wallet-adapter-react": "^3.7.9",
     "@apollo/client": "^3.12.8",
-    "@aptos-labs/ts-sdk": "^5.1.0",
-    "@aptos-labs/wallet-adapter-react": "^7.1.0",
     "@martianwallet/aptos-wallet-adapter": "^0.0.5",
     "@react-three/drei": "^10.0.7",
     "@react-three/fiber": "^9.1.2",
@@ -26,7 +27,9 @@
     "react-dom": "^19.0.0",
     "react-icons": "^4.8.0",
     "react-router-dom": "^7.5.1",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "@pontem/wallet-adapter-plugin": "^0.2.1",
+    "@rise-wallet/wallet-adapter": "^0.1.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
