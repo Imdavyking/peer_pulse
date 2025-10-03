@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@telegram-apps/bridge":"1.9.2",
+    "graphql-request":"7.1.2",
+    "@mizuwallet-sdk/core":"1.4.0",
     "@aptos-labs/ts-sdk": "^1.33.2",
     "@aptos-labs/wallet-adapter-ant-design": "^3.0.23",
     "@aptos-labs/wallet-adapter-react": "^3.7.9",
