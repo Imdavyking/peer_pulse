@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 const ConnectWalletButton = () => {
