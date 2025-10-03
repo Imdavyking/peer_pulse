@@ -29,7 +29,7 @@ const NavHeader = () => {
     <header className="p-6 border-b shadow-sm bg-white flex justify-between items-center mb-6 relative">
       <Link to="/">
         <h1 className="text-2xl md:text-3xl font-bold text-blue-600">
-          Polkalend
+          PeerPulse
         </h1>
       </Link>
 

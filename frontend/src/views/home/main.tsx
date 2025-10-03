@@ -30,7 +30,7 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            Polkalend
+            PeerPulse
           </motion.h1>
 
           <motion.p
@@ -56,7 +56,7 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-bold text-purple-300 mb-4">
-              Why Polkalend?
+              Why PeerPulse?
             </h2>
             <ul className="space-y-3 text-gray-300">
               <li>🔐 No interest — truly DeFi</li>
