@@ -16,22 +16,15 @@ export const getUserBalance = async (
   token: string
 ): Promise<number> => {
   if (token == tokens[0].address) {
-    const isRegistered = await aptos
-      .getAccountResource({
+    try {
+      const balance = await aptos.getAccountCoinAmount({
         accountAddress: account.address,
-        resourceType: `0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`,
-      })
-      .catch(() => null);
-
-    if (!isRegistered) {
-      return 0; // Account not registered for the token, return 0 balance
+        coinType: "0x1::aptos_coin::AptosCoin",
+      });
+      return balance / 10 ** 8;
+    } catch (error) {
+      return 0;
     }
-
-    const balance = await aptos.getAccountCoinAmount({
-      accountAddress: account.address,
-      coinType: "0x1::aptos_coin::AptosCoin",
-    });
-    return balance;
   }
 
   return 0;
