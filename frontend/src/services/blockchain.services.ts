@@ -5,21 +5,36 @@ import {
   Network,
   NetworkToNetworkName,
 } from "@aptos-labs/ts-sdk";
-import { ACCOUNT, ACCOUNT_ADDR, MODULE_NAME } from "../utils/constants";
+import { ACCOUNT, ACCOUNT_ADDR, MODULE_NAME, tokens } from "../utils/constants";
+import { AccountInfo } from "@aptos-labs/wallet-adapter-core";
 
 const APTOS_NETWORK: Network = NetworkToNetworkName[Network.DEVNET];
 const config = new AptosConfig({ network: APTOS_NETWORK });
 const aptos = new Aptos(config);
 export const getUserBalance = async (
-  account: any,
+  account: AccountInfo,
   token: string
 ): Promise<number> => {
-  let userBalance = 0;
+  if (token == tokens[0].address) {
+    const isRegistered = await aptos
+      .getAccountResource({
+        accountAddress: account.address,
+        resourceType: `0x1::coin::CoinStore<0x1::aptos_coin::AptosCoin>`,
+      })
+      .catch(() => null);
 
-  token;
-  account;
+    if (!isRegistered) {
+      return 0; // Account not registered for the token, return 0 balance
+    }
 
-  return userBalance;
+    const balance = await aptos.getAccountCoinAmount({
+      accountAddress: account.address,
+      coinType: "0x1::aptos_coin::AptosCoin",
+    });
+    return balance;
+  }
+
+  return 0;
 };
 
 export const getLiquidity = async ({
