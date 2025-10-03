@@ -103,7 +103,7 @@ export default function Home() {
         </motion.div>
 
         <footer className="text-center text-gray-500 text-sm pb-8">
-          Built with ❤️ for the Polkadot ecosystem
+          Built with ❤️ for the Aptos ecosystem
         </footer>
       </div>
     </div>
