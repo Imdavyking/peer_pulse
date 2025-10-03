@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { tokens } from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import {
-  getUserBalance,
-  lockCollateral,
-} from "../../services/blockchain.services";
+import { getUserBalance } from "../../services/blockchain.services";
 import { toast } from "react-toastify";
 
 interface Token {
@@ -21,7 +18,7 @@ export default function LockCollaterial() {
   const [selectedToken, setSelectedToken] = useState<Token>(tokens[0]);
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState("");
-  const { account } = useWallet();
+  const { account, signAndSubmitTransaction } = useWallet();
 
   useEffect(() => {
     (async () => {
@@ -43,11 +40,14 @@ export default function LockCollaterial() {
         toast.error("Please connect your wallet");
         return;
       }
-      await lockCollateral({
-        token: selectedToken.address,
-        amount: +amount,
-        account: account,
+      await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
+          functionArguments: [selectedToken.address, +amount],
+        },
       });
+
       toast.success("Collateral locked successfully");
     } catch (error) {
       console.error("Error:", error);

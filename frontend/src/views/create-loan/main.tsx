@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { tokens } from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import { toast } from "react-toastify";
-import { createLoan, getUserBalance } from "../../services/blockchain.services";
+import { getUserBalance } from "../../services/blockchain.services";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 import SubmitButton from "../../components/SubmitButton";
@@ -13,7 +13,7 @@ export default function CreateLoan() {
   const [duration, setDuration] = useState("");
   const [creatingLoan, setCreatingLoan] = useState(false);
   const [balance, setBalance] = useState("");
-  const { account } = useWallet();
+  const { account, signAndSubmitTransaction } = useWallet();
 
   useEffect(() => {
     (async () => {
@@ -61,11 +61,12 @@ export default function CreateLoan() {
         return;
       }
 
-      await createLoan({
-        account: account,
-        token,
-        amount: Number(amount),
-        duration: BigInt(duration),
+      await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
+          functionArguments: [token, +amount, BigInt(duration)],
+        },
       });
 
       toast.success("Loan offer created successfully!");

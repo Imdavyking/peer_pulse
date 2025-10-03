@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
-import { tokens } from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import {
-  getDebt,
-  getUserBalance,
-  payLoan,
-} from "../../services/blockchain.services";
+import { getDebt, getUserBalance } from "../../services/blockchain.services";
 import { toast } from "react-toastify";
 
 interface Token {
@@ -25,7 +21,7 @@ export default function PayLoan() {
   const [balance, setBalance] = useState("");
   const [lender, setLender] = useState("");
   const [debt, setDebt] = useState("");
-  const { account } = useWallet();
+  const { account, signAndSubmitTransaction } = useWallet();
 
   useEffect(() => {
     const fetchDebt = async () => {
@@ -33,7 +29,6 @@ export default function PayLoan() {
       const debt = await getDebt({
         borrower: account.address,
         token: selectedLoanToken.address,
-        account,
       });
       if (typeof debt === "undefined") {
         console.log("collateral is undefined");
@@ -69,12 +64,14 @@ export default function PayLoan() {
         toast.error("Please connect your wallet");
         return;
       }
-      await payLoan({
-        lender,
-        token: selectedLoanToken.address,
-        amount: +amount,
-        account: account,
+      await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${ACCOUNT}::${MODULE_NAME}::pay_loan`,
+          functionArguments: [selectedLoanToken.address, lender, +amount],
+        },
       });
+
       toast.success("Loan accepted successfully!");
     } catch (error) {
       console.error("Error:", error);

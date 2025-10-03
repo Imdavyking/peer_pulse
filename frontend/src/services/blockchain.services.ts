@@ -1,3 +1,15 @@
+import { InputViewFunctionData } from "@aptos-labs/ts-sdk";
+import {
+  Aptos,
+  AptosConfig,
+  Network,
+  NetworkToNetworkName,
+} from "@aptos-labs/ts-sdk";
+import { ACCOUNT, MODULE_NAME } from "../utils/constants";
+
+const APTOS_NETWORK: Network = NetworkToNetworkName[Network.DEVNET];
+const config = new AptosConfig({ network: APTOS_NETWORK });
+const aptos = new Aptos(config);
 export const getUserBalance = async (
   account: any,
   token: string
@@ -13,108 +25,46 @@ export const getUserBalance = async (
 export const getLiquidity = async ({
   lender,
   token,
-  account,
 }: {
   lender: string;
   token: string;
-  account: any;
 }) => {
-  lender;
-  token;
-  account;
-  return 0;
+  const payload: InputViewFunctionData = {
+    function: `${ACCOUNT}::${MODULE_NAME}::get_liquidity`,
+    typeArguments: [],
+    functionArguments: [lender, token],
+  };
+  const output = await aptos.view({ payload });
+  return (output[0]?.toString() ?? "0").toString();
 };
 
 export const getCollaterial = async ({
   borrower,
   token,
-  account,
 }: {
   borrower: string;
   token: string;
-  account: any;
 }) => {
-  borrower;
-  token;
-  account;
-  return 0;
+  const payload: InputViewFunctionData = {
+    function: `${ACCOUNT}::${MODULE_NAME}::get_collateral`,
+    typeArguments: [],
+    functionArguments: [borrower, token],
+  };
+  const output = await aptos.view({ payload });
+  return (output[0]?.toString() ?? "0").toString();
 };
 export const getDebt = async ({
   borrower,
   token,
-  account,
 }: {
   borrower: string;
   token: string;
-  account: any;
 }) => {
-  borrower;
-  token;
-  account;
-  return 0;
-};
-
-export const createLoan = async ({
-  account,
-  token,
-  amount,
-  duration,
-}: {
-  token: string;
-  amount: number;
-  duration: bigint;
-  account: any;
-}) => {
-  account;
-  token;
-  amount;
-  duration;
-};
-
-export const acceptLoan = async ({
-  account,
-  lender,
-  token,
-  amount,
-}: {
-  lender: string;
-  token: string;
-  amount: number;
-  account: any;
-}) => {
-  account;
-  lender;
-  token;
-  amount;
-};
-
-export const payLoan = async ({
-  account,
-  lender,
-  token,
-  amount,
-}: {
-  lender: string;
-  token: string;
-  amount: number;
-  account: any;
-}) => {
-  account;
-  lender;
-  token;
-  amount;
-};
-
-export const lockCollateral = async ({
-  account,
-  token,
-  amount,
-}: {
-  token: string;
-  amount: number;
-  account: any;
-}) => {
-  account;
-  token;
-  amount;
+  const payload: InputViewFunctionData = {
+    function: `${ACCOUNT}::${MODULE_NAME}::get_debt`,
+    typeArguments: [],
+    functionArguments: [borrower, token],
+  };
+  const output = await aptos.view({ payload });
+  return (output[0]?.toString() ?? "0").toString();
 };

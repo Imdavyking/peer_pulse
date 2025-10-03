@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { tokens } from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
-  acceptLoan,
   getCollaterial,
   getLiquidity,
 } from "../../services/blockchain.services";
@@ -20,11 +19,11 @@ interface Token {
 
 export default function AcceptLoanForm() {
   const [amount, setAmount] = useState("");
+  const { account, signAndSubmitTransaction } = useWallet();
   const [selectedLoanToken, setSelectedLoanToken] = useState<Token>(tokens[0]);
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState("");
   const [collateral, setCollaterial] = useState("");
-  const { account } = useWallet();
 
   const [lender, setLender] = useState("");
 
@@ -34,7 +33,6 @@ export default function AcceptLoanForm() {
       const collaterial = await getCollaterial({
         borrower: account.address,
         token: selectedLoanToken.address,
-        account,
       });
       if (typeof collaterial === "undefined") {
         console.log("collateral is undefined");
@@ -53,7 +51,6 @@ export default function AcceptLoanForm() {
       const balance = await getLiquidity({
         lender,
         token: selectedLoanToken.address,
-        account,
       });
 
       if (typeof balance === "undefined") {
@@ -73,12 +70,15 @@ export default function AcceptLoanForm() {
         toast.error("Please connect your wallet");
         return;
       }
-      await acceptLoan({
-        lender,
-        token: selectedLoanToken.address,
-        amount: +amount,
-        account: account,
+
+      await signAndSubmitTransaction({
+        sender: account.address,
+        data: {
+          function: `${ACCOUNT}::${MODULE_NAME}::accept_loan`,
+          functionArguments: [lender, selectedLoanToken.address, +amount],
+        },
       });
+
       toast.success("Loan accepted successfully!");
     } catch (error) {
       console.error("Error:", error);
