@@ -77,7 +77,7 @@ export default function PayLoan() {
             ACCOUNT_ADDR,
             selectedLoanToken.address,
             lender,
-            +amount,
+            Math.trunc(+amount * 10 ** 8),
           ],
         },
       });
