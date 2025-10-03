@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 
 const ConnectWalletButton = () => {
-  const { connect, disconnect, account, wallets, connected } = useWallet();
+  const { connect, disconnect, account, wallets } = useWallet();
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
 
