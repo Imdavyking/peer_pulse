@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
+import {
+  ACCOUNT,
+  ACCOUNT_ADDR,
+  MODULE_NAME,
+  tokens,
+} from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
@@ -75,7 +80,12 @@ export default function AcceptLoanForm() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::accept_loan`,
-          functionArguments: [lender, selectedLoanToken.address, +amount],
+          functionArguments: [
+            ACCOUNT_ADDR,
+            lender,
+            selectedLoanToken.address,
+            +amount,
+          ],
         },
       });
 

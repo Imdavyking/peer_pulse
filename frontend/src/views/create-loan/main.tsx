@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
+import {
+  ACCOUNT,
+  ACCOUNT_ADDR,
+  MODULE_NAME,
+  tokens,
+} from "../../utils/constants";
 import { toast } from "react-toastify";
 import { getUserBalance } from "../../services/blockchain.services";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -65,7 +70,7 @@ export default function CreateLoan() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
-          functionArguments: [token, +amount, BigInt(duration)],
+          functionArguments: [ACCOUNT_ADDR, token, +amount, BigInt(duration)],
         },
       });
 

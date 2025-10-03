@@ -5,6 +5,7 @@ authors = []
 
 [addresses]
 peer_purse_addr="d9a0133b75e87fb012f4a419d12f12951628dab2c97d78b104b9e8ae7b2f2aac"
+peer_purse_v2_addr="dff05cc824da2a56ba5b92c776502e93bb5cfbd984bf4110a0d7fb4c0de13a85"
 
 [dev-addresses]
 

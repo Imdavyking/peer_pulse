@@ -1,4 +1,4 @@
-module peer_purse_addr::peer_pulse {
+module peer_purse_v2_addr::peer_pulse {
     use std::signer;
     use std::vector;
     use aptos_framework::event;
@@ -80,6 +80,10 @@ module peer_purse_addr::peer_pulse {
         loan_accepted_handle: event::EventHandle<LoanAccepted>,
         loan_repaid_handle: event::EventHandle<LoanRepaid>,
         collateral_released_handle: event::EventHandle<CollateralReleased>,
+    }
+
+    fun init_module(account: &signer) {
+            initialize(account);
     }
 
     // Initialize the contract with a resource account

@@ -5,7 +5,7 @@ import {
   Network,
   NetworkToNetworkName,
 } from "@aptos-labs/ts-sdk";
-import { ACCOUNT, MODULE_NAME } from "../utils/constants";
+import { ACCOUNT, ACCOUNT_ADDR, MODULE_NAME } from "../utils/constants";
 
 const APTOS_NETWORK: Network = NetworkToNetworkName[Network.DEVNET];
 const config = new AptosConfig({ network: APTOS_NETWORK });
@@ -32,7 +32,7 @@ export const getLiquidity = async ({
   const payload: InputViewFunctionData = {
     function: `${ACCOUNT}::${MODULE_NAME}::get_liquidity`,
     typeArguments: [],
-    functionArguments: [lender, token],
+    functionArguments: [ACCOUNT_ADDR, lender, token],
   };
   const output = await aptos.view({ payload });
   return (output[0]?.toString() ?? "0").toString();
@@ -48,7 +48,7 @@ export const getCollaterial = async ({
   const payload: InputViewFunctionData = {
     function: `${ACCOUNT}::${MODULE_NAME}::get_collateral`,
     typeArguments: [],
-    functionArguments: [borrower, token],
+    functionArguments: [ACCOUNT_ADDR, borrower, token],
   };
   const output = await aptos.view({ payload });
   return (output[0]?.toString() ?? "0").toString();
@@ -63,7 +63,7 @@ export const getDebt = async ({
   const payload: InputViewFunctionData = {
     function: `${ACCOUNT}::${MODULE_NAME}::get_debt`,
     typeArguments: [],
-    functionArguments: [borrower, token],
+    functionArguments: [ACCOUNT_ADDR, borrower, token],
   };
   const output = await aptos.view({ payload });
   return (output[0]?.toString() ?? "0").toString();
