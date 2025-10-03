@@ -23,7 +23,7 @@ const ConnectWalletButton = () => {
       {/* Main Button */}
       <button
         onClick={handleMainClick}
-        className="px-5 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform"
+        className="px-5 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer"
       >
         {account ? "Disconnect Wallet" : "Connect Wallet"}
       </button>
@@ -41,7 +41,7 @@ const ConnectWalletButton = () => {
                   <button
                     key={wallet.name}
                     onClick={() => handleWalletClick(wallet.name)}
-                    className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium transition-colors"
+                    className="px-4 py-2 rounded-xl border border-gray-300 hover:bg-gray-100 text-gray-700 font-medium transition-colors cursor-pointer"
                   >
                     {wallet.name}
                   </button>
@@ -50,7 +50,7 @@ const ConnectWalletButton = () => {
 
             <button
               onClick={() => setIsModalOpen(false)}
-              className="mt-5 w-full px-4 py-2 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors"
+              className="mt-5 w-full px-4 py-2 rounded-xl bg-red-500 text-white font-semibold hover:bg-red-600 transition-colors cursor-pointer"
             >
               Cancel
             </button>
