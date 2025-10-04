@@ -117,20 +117,20 @@ module peer_purse_v2_addr::peer_pulse {
 
     // Getters
     #[view]
-    public fun get_owner(addr: address): address acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_owner(): address acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         platform.owner
     }
 
     #[view]
-    public fun get_min_collateral_ratio(addr: address): u64 acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_min_collateral_ratio(): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         platform.min_collateral_ratio
     }
 
     #[view]
-    public fun get_liquidity(addr: address,lender: address, token: address): u64 acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_liquidity(lender: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         if (table::contains(&platform.liquidity_pool, lender)) {
             let token_table = table::borrow(&platform.liquidity_pool, lender);
             *table::borrow_with_default(token_table, token, &0)
@@ -140,8 +140,8 @@ module peer_purse_v2_addr::peer_pulse {
     }
 
     #[view]
-    public fun get_debt(addr: address,borrower: address, token: address): u64 acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_debt(borrower: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         if (table::contains(&platform.debt, borrower)) {
             let token_table = table::borrow(&platform.debt, borrower);
             *table::borrow_with_default(token_table, token, &0)
@@ -151,8 +151,8 @@ module peer_purse_v2_addr::peer_pulse {
     }
 
     #[view]
-    public fun get_collateral(addr: address,borrower: address, token: address): u64 acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_collateral(borrower: address, token: address): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         if (table::contains(&platform.collateral, borrower)) {
             let token_table = table::borrow(&platform.collateral, borrower);
             *table::borrow_with_default(token_table, token, &0)
@@ -162,8 +162,8 @@ module peer_purse_v2_addr::peer_pulse {
     }
 
     #[view]
-    public fun get_active_loans(addr: address,borrower: address): vector<Loan> acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun get_active_loans(borrower: address): vector<Loan> acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         *table::borrow_with_default(&platform.active_loans, borrower, &vector::empty())
     }
 
@@ -172,7 +172,6 @@ module peer_purse_v2_addr::peer_pulse {
     // Create a loan by depositing liquidity
     public entry fun create_loan(
         account: &signer,
-        addr: address,
         token: address,
         amount: u64,
         duration: u64
@@ -181,7 +180,7 @@ module peer_purse_v2_addr::peer_pulse {
         assert!(amount != 0, E_ZERO_AMOUNT);
         assert!(duration != 0, E_ZERO_DURATION);
 
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         let platform_addr = platform.resource_account;
         let token_table = if (table::contains(&platform.liquidity_pool, signer_addr)) {
             table::borrow_mut(&mut platform.liquidity_pool, signer_addr)
@@ -203,7 +202,7 @@ module peer_purse_v2_addr::peer_pulse {
             abort E_NOT_SUPPORTED_TOKEN;
         };
 
-        let event_handles = borrow_global_mut<EventHandles>(addr);
+        let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
         event::emit_event(&mut event_handles.loan_created_handle, LoanCreated {
             lender: signer_addr,
             token,
@@ -214,14 +213,13 @@ module peer_purse_v2_addr::peer_pulse {
     // Lock collateral
     public entry fun lock_collateral(
         account: &signer,
-        addr: address,
         collateral_token: address,
         collateral_amount: u64,
     ) acquires LendingPlatform {
         let borrower = signer::address_of(account);
         assert!(collateral_amount != 0, E_ZERO_AMOUNT);
 
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         let platform_addr = platform.resource_account;
         let token_table = if (table::contains(&platform.collateral, borrower)) {
             table::borrow_mut(&mut platform.collateral, borrower)
@@ -247,7 +245,6 @@ module peer_purse_v2_addr::peer_pulse {
     // Accept a loan
     public entry fun accept_loan(
         account: &signer,
-        addr: address,
         lender: address,
         token: address,
         amount: u64
@@ -255,7 +252,7 @@ module peer_purse_v2_addr::peer_pulse {
         let borrower = signer::address_of(account);
         assert!(amount != 0, E_ZERO_AMOUNT);
 
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         let platform_addr = platform.resource_account;
         let liquidity_table = if (table::contains(&platform.liquidity_pool, lender)) {
             table::borrow_mut(&mut platform.liquidity_pool, lender)
@@ -290,14 +287,14 @@ module peer_purse_v2_addr::peer_pulse {
         vector::push_back(loans, Loan { lender, token, amount });
 
         if (token == @aptos_framework) {
-            let cap = borrow_global<SignerCapability>(addr);
+            let cap = borrow_global<SignerCapability>(@peer_purse_addr);
             let platform_signer = account::create_signer_with_capability(&cap.cap);
             coin::transfer<AptosCoin>(&platform_signer, borrower, amount);
         } else {
             abort E_NOT_SUPPORTED_TOKEN;
         };
 
-        let event_handles = borrow_global_mut<EventHandles>(addr);
+        let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
         event::emit_event(&mut event_handles.loan_accepted_handle, LoanAccepted {
             borrower,
             lender,
@@ -311,13 +308,12 @@ module peer_purse_v2_addr::peer_pulse {
     // Repay a loan
     public entry fun pay_loan(
         account: &signer,
-        addr: address,
         token: address,
         lender: address,
         amount: u64
     ) acquires LendingPlatform, EventHandles, SignerCapability {
         let borrower = signer::address_of(account);
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         let platform_addr = platform.resource_account;
         let debt_table = if (table::contains(&platform.debt, borrower)) {
             table::borrow_mut(&mut platform.debt, borrower)
@@ -345,7 +341,7 @@ module peer_purse_v2_addr::peer_pulse {
             let collateral_amount = *table::borrow_with_default(collateral_table, collateral_token, &0);
 
             if (collateral_token == @aptos_framework) {
-                let cap = borrow_global<SignerCapability>(addr);
+                let cap = borrow_global<SignerCapability>(@peer_purse_addr);
                 let platform_signer = account::create_signer_with_capability(&cap.cap);
                 coin::transfer<AptosCoin>(&platform_signer, borrower, collateral_amount);
             } else {
@@ -354,7 +350,7 @@ module peer_purse_v2_addr::peer_pulse {
 
             table::upsert(collateral_table, collateral_token, 0);
 
-            let event_handles = borrow_global_mut<EventHandles>(addr);
+            let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
             event::emit_event(&mut event_handles.collateral_released_handle, CollateralReleased {
                 borrower,
                 collateral_token,
@@ -362,7 +358,7 @@ module peer_purse_v2_addr::peer_pulse {
             });
         };
 
-        let event_handles = borrow_global_mut<EventHandles>(addr);
+        let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
         event::emit_event(&mut event_handles.loan_repaid_handle, LoanRepaid {
             borrower,
             lender,
@@ -374,10 +370,9 @@ module peer_purse_v2_addr::peer_pulse {
     // Set minimum collateral ratio
     public entry fun update_min_collateral_ratio(
         account: &signer,
-        addr: address,
         new_ratio: u64
     ) acquires LendingPlatform {
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         assert!(signer::address_of(account) == platform.owner, E_NOT_OWNER);
         assert!(new_ratio >= 10000, E_INVALID_RATIO);
         platform.min_collateral_ratio = new_ratio;
@@ -386,23 +381,22 @@ module peer_purse_v2_addr::peer_pulse {
     // Set new owner
     public entry fun set_owner(
         account: &signer,
-        addr: address,
         new_owner: address
     ) acquires LendingPlatform {
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         assert!(signer::address_of(account) == platform.owner, E_NOT_OWNER);
         assert!(new_owner != @0x0, E_INVALID_OWNER);
         platform.owner = new_owner;
     }
 
     #[view]
-    public fun calculate_required_collateral(addr: address,amount: u64): u64 acquires LendingPlatform {
-        let platform = borrow_global<LendingPlatform>(addr);
+    public fun calculate_required_collateral(amount: u64): u64 acquires LendingPlatform {
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
         (amount * platform.min_collateral_ratio) / 10000
     }
 
     #[view]
-    public fun is_undercollateralized(addr: address,borrower: address, token: address): bool acquires LendingPlatform {
+    public fun is_undercollateralized(borrower: address, token: address): bool acquires LendingPlatform {
         let debt = get_debt(addr,borrower, token);
         let collateral = get_collateral(addr,borrower, token);
         let required = calculate_required_collateral(addr,debt);
@@ -412,11 +406,10 @@ module peer_purse_v2_addr::peer_pulse {
     // Liquidate a loan
     public entry fun liquidate(
         account: &signer,
-        addr: address,
         borrower: address,
         token: address
     ) acquires LendingPlatform, EventHandles, SignerCapability {
-        let platform = borrow_global_mut<LendingPlatform>(addr);
+        let platform = borrow_global_mut<LendingPlatform>(@peer_purse_addr);
         let platform_addr = platform.resource_account;
         let debt = if (table::contains(&platform.debt, borrower)) {
             let token_table = table::borrow(&platform.debt, borrower);
@@ -446,14 +439,14 @@ module peer_purse_v2_addr::peer_pulse {
 
         let caller = signer::address_of(account);
         if (collateral_token == @aptos_framework) {
-            let cap = borrow_global<SignerCapability>(addr);
+            let cap = borrow_global<SignerCapability>(@peer_purse_addr);
             let platform_signer = account::create_signer_with_capability(&cap.cap);
             coin::transfer<AptosCoin>(&platform_signer, caller, collateral_amount);
         } else {
             abort E_NOT_SUPPORTED_TOKEN;
         };
 
-        let event_handles = borrow_global_mut<EventHandles>(addr);
+        let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
         event::emit_event(&mut event_handles.collateral_released_handle, CollateralReleased {
             borrower,
             collateral_token,
