@@ -456,31 +456,6 @@ module peer_purse_addr::peer_pulse {
             amount: collateral_amount,
         });
     }
-
-    // #[test_only]
-    // use aptos_framework::coin::BurnCapability;
-    // use std::string;
-    // fun setup_account(aptos_framework: &signer, sponsor: &signer,initial_balance: u64): BurnCapability<AptosCoin> {
-    //     timestamp::set_time_has_started_for_testing(aptos_framework);
-
-    //     let (burn_cap, freeze_cap, mint_cap) = coin::initialize<AptosCoin>(
-    //         aptos_framework,
-    //         string::utf8(b"TC"),
-    //         string::utf8(b"TC"),
-    //         8,
-    //         false,
-    //     );
-    //     account::create_account_for_test(signer::address_of(sponsor));
-    //     coin::register<AptosCoin>(sponsor);
-    //     let coins = coin::mint<AptosCoin>(initial_balance, &mint_cap);
-    //     coin::deposit(signer::address_of(sponsor), coins);
-    //     coin::destroy_mint_cap(mint_cap);
-    //     coin::destroy_freeze_cap(freeze_cap);
-    //     burn_cap
-    // }
-
-
-
   
 
 
@@ -518,31 +493,29 @@ module peer_purse_addr::peer_pulse {
     }
 
 
-    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
-    // fun test_create_loan_success(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
-    //     setup_account(aptos_framework, 1000000);
-    //     setup_account(account, 1000000);
-    //     peer_pulse::init_module(account);
+    #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    fun test_create_loan_success(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
+        test_init_module_success(aptos_framework,account);
 
-    //     let amount = 1000;
-    //     let duration = 100;
-    //     peer_pulse::create_loan(account, @0x1, amount, duration);
+        let amount = 1000;
+        let duration = 100;
+        create_loan(account, @0x1, amount, duration);
 
-    //     let liquidity = peer_pulse::get_liquidity(@peer_purse_addr, @0x1);
-    //     assert!(liquidity == amount, 2000);
+        let liquidity = get_liquidity(@peer_purse_addr, @0x1);
+        assert!(liquidity == amount, 2000);
 
-    //     let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
-    //     let platform_balance = coin::balance<AptosCoin>(platform.resource_account);
-    //     assert!(platform_balance >= amount, 2001);
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
+        let platform_balance = coin::balance<AptosCoin>(platform.resource_account);
+        assert!(platform_balance >= amount, 2001);
 
-    //     let events = borrow_global<EventHandles>(@peer_purse_addr);
-    //     let emitted_events = event::emitted_events<LoanCreated>(&events.loan_created_handle);
-    //     assert!(vector::length(&emitted_events) == 1, 2002);
-    //     let event = vector::borrow(&emitted_events, 0);
-    //     assert!(event.lender == @peer_purse_addr, 2003);
-    //     assert!(event.token == @0x1, 2004);
-    //     assert!(event.amount == amount, 2005);
-    // }
+        let events = borrow_global<EventHandles>(@peer_purse_addr);
+        let emitted_events = event::emitted_events<LoanCreated>();
+        // assert!(vector::length(&emitted_events) == 1, 2002);
+        // let event = vector::borrow(&emitted_events, 0);
+        // assert!(event.lender == @peer_purse_addr, 2003);
+        // assert!(event.token == @0x1, 2004);
+        // assert!(event.amount == amount, 2005);
+    }
 
     // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
     // #[expected_failure(abort_code = E_ZERO_AMOUNT)]
