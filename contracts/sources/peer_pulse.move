@@ -456,6 +456,9 @@ module peer_purse_addr::peer_pulse {
             amount: collateral_amount,
         });
     }
+
+    #[test_only]
+    use std::debug::print;
   
 
 
@@ -510,6 +513,7 @@ module peer_purse_addr::peer_pulse {
 
         let events = borrow_global<EventHandles>(@peer_purse_addr);
         let emitted_events = event::emitted_events<LoanCreated>();
+        print(&emitted_events); // shows []
         // assert!(vector::length(&emitted_events) == 1, 2002);
         // let event = vector::borrow(&emitted_events, 0);
         // assert!(event.lender == @peer_purse_addr, 2003);
