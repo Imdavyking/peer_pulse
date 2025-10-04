@@ -89,6 +89,11 @@ aptos account fund-with-faucet \
   --account d9a0133b75e87fb012f4a419d12f12951628dab2c97d78b104b9e8ae7b2f2aac \
   --amount 100000000
 ```
+### 1. Create Account
+
+```bash
+aptos init --profile davyking --network devnet 
+```
 
 ### 2. Run Unit Tests
 

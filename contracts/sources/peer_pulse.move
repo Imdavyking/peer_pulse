@@ -1,4 +1,4 @@
-module peer_purse_v2_addr::peer_pulse {
+module peer_purse_addr::peer_pulse {
     use std::signer;
     use std::vector;
     use aptos_framework::event;
@@ -397,9 +397,9 @@ module peer_purse_v2_addr::peer_pulse {
 
     #[view]
     public fun is_undercollateralized(borrower: address, token: address): bool acquires LendingPlatform {
-        let debt = get_debt(addr,borrower, token);
-        let collateral = get_collateral(addr,borrower, token);
-        let required = calculate_required_collateral(addr,debt);
+        let debt = get_debt(borrower, token);
+        let collateral = get_collateral(borrower, token);
+        let required = calculate_required_collateral(debt);
         collateral < required
     }
 
