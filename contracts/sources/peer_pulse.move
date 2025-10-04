@@ -82,13 +82,9 @@ module peer_purse_v2_addr::peer_pulse {
         collateral_released_handle: event::EventHandle<CollateralReleased>,
     }
 
+    // constructor - initialize the lending platform
     fun init_module(account: &signer) {
-            initialize(account);
-    }
-
-    // Initialize the contract with a resource account
-    public entry fun initialize(account: &signer) {
-        let signer_addr = signer::address_of(account);
+         let signer_addr = signer::address_of(account);
         // Create a resource account for the platform
         let (resource_signer, cap) = account::create_resource_account(account, b"peer_pulse");
         let resource_addr = signer::address_of(&resource_signer);
@@ -118,7 +114,6 @@ module peer_purse_v2_addr::peer_pulse {
             coin::register<AptosCoin>(account);
         };
     }
-
 
     // Getters
     #[view]
