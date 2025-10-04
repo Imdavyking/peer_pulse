@@ -74,7 +74,7 @@ export default function CreateLoan() {
             ACCOUNT_ADDR,
             token,
             Math.trunc(+amount * 10 ** 8),
-            BigInt(+duration * 86400).toString(),
+            BigInt(Math.trunc(+duration * 86400)).toString(),
           ],
         },
       });
