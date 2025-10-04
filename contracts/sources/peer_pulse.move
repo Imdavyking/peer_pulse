@@ -6,7 +6,10 @@ module peer_purse_addr::peer_pulse {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_std::table::{Self, Table};
     use aptos_framework::account;
+    use aptos_framework::aptos_coin;
+    use aptos_framework::aptos_account;
     use aptos_framework::resource_account;
+    use aptos_framework::timestamp;
 
     // Error codes
     const E_ZERO_AMOUNT: u64 = 1;
@@ -453,4 +456,397 @@ module peer_purse_addr::peer_pulse {
             amount: collateral_amount,
         });
     }
+
+
+
+    fun setup_account(account: &signer, initial_balance: u64) {
+        timestamp::set_time_has_started_for_testing(account);
+        let addr = signer::address_of(account);
+        // Ensure account exists and is registered for AptosCoin
+        if (!account::exists_at(addr)) {
+            account::create_account_for_test(addr);
+        };
+        if (!coin::is_account_registered<AptosCoin>(addr)) {
+            coin::register<AptosCoin>(account);
+        };
+        let (burn, mint) = aptos_framework::aptos_coin::initialize_for_test(account);
+        let coin = coin::mint<AptosCoin>(100, &mint);
+        coin::deposit(signer::address_of(account), coin);
+        coin::destroy_burn_cap(burn);
+        coin::destroy_mint_cap(mint);
+    }
+
+
+
+    #[test(account = @peer_purse_addr)]
+    fun test_init_module_success(account: &signer) acquires LendingPlatform{
+        // setup_account(account, 1000000);
+        // setup_account(account, 1000000);
+        peer_pulse::init_module(account);
+        
+        let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
+        // assert!(platform.owner == @peer_purse_addr, 1000);
+        // assert!(platform.min_collateral_ratio == 15000, 1001);
+        // assert!(platform.resource_account != @0x0, 1002);
+        // assert!(exists<EventHandles>(@peer_purse_addr), 1003);
+        // assert!(exists<SignerCapability>(@peer_purse_addr), 1004);
+        // assert!(coin::is_account_registered<AptosCoin>(platform.resource_account), 1005);
+        // assert!(coin::is_account_registered<AptosCoin>(@peer_purse_addr), 1006);
+    }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // fun test_create_loan_success(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let amount = 1000;
+    //     let duration = 100;
+    //     peer_pulse::create_loan(account, @0x1, amount, duration);
+
+    //     let liquidity = peer_pulse::get_liquidity(@peer_purse_addr, @0x1);
+    //     assert!(liquidity == amount, 2000);
+
+    //     let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
+    //     let platform_balance = coin::balance<AptosCoin>(platform.resource_account);
+    //     assert!(platform_balance >= amount, 2001);
+
+    //     let events = borrow_global<EventHandles>(@peer_purse_addr);
+    //     let emitted_events = event::emitted_events<LoanCreated>(&events.loan_created_handle);
+    //     assert!(vector::length(&emitted_events) == 1, 2002);
+    //     let event = vector::borrow(&emitted_events, 0);
+    //     assert!(event.lender == @peer_purse_addr, 2003);
+    //     assert!(event.token == @0x1, 2004);
+    //     assert!(event.amount == amount, 2005);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_ZERO_AMOUNT)]
+    // fun test_create_loan_zero_amount(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 0, 100);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_ZERO_DURATION)]
+    // fun test_create_loan_zero_duration(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 0);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_NOT_SUPPORTED_TOKEN)]
+    // fun test_create_loan_unsupported_token(account: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x2, 1000, 100);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_lock_collateral_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let collateral_amount = 2000;
+    //     peer_pulse::lock_collateral(borrower, @0x1, collateral_amount);
+
+    //     let collateral = peer_pulse::get_collateral(signer::address_of(borrower), @0x1);
+    //     assert!(collateral == collateral_amount, 3000);
+
+    //     let platform = borrow_global<LendingPlatform>(@peer_purse_addr);
+    //     let platform_balance = coin::balance<AptosCoin>(platform.resource_account);
+    //     assert!(platform_balance >= collateral_amount, 3001);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_ZERO_AMOUNT)]
+    // fun test_lock_collateral_zero_amount(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 0);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_accept_loan_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let amount = 1000;
+    //     let collateral_amount = 1500; // 150% of amount (min_collateral_ratio = 15000)
+    //     peer_pulse::create_loan(account, @0x1, amount, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, collateral_amount);
+
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, amount);
+
+    //     let debt = peer_pulse::get_debt(signer::address_of(borrower), @0x1);
+    //     assert!(debt == amount, 4000);
+    //     let liquidity = peer_pulse::get_liquidity(@peer_purse_addr, @0x1);
+    //     assert!(liquidity == 0, 4001);
+    //     let collateral = peer_pulse::get_collateral(signer::address_of(borrower), @0x1);
+    //     assert!(collateral == collateral_amount, 4002);
+    //     let loans = peer_pulse::get_active_loans(signer::address_of(borrower));
+    //     assert!(vector::length(&loans) == 1, 4003);
+    //     let loan = vector::borrow(&loans, 0);
+    //     assert!(loan.lender == @peer_purse_addr, 4004);
+    //     assert!(loan.token == @0x1, 4005);
+    //     assert!(loan.amount == amount, 4006);
+
+    //     let borrower_balance = coin::balance<AptosCoin>(signer::address_of(borrower));
+    //     assert!(borrower_balance >= amount, 4007);
+
+    //     let events = borrow_global<EventHandles>(@peer_purse_addr);
+    //     let emitted_events = event::emitted_events<LoanAccepted>(&events.loan_accepted_handle);
+    //     assert!(vector::length(&emitted_events) == 1, 4008);
+    //     let event = vector::borrow(&emitted_events, 0);
+    //     assert!(event.borrower == signer::address_of(borrower), 4009);
+    //     assert!(event.lender == @peer_purse_addr, 4010);
+    //     assert!(event.amount == amount, 4011);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_INSUFFICIENT_LIQUIDITY)]
+    // fun test_accept_loan_insufficient_liquidity(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1500);
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_COLLATERAL_TOO_LOW)]
+    // fun test_accept_loan_insufficient_collateral(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1000); // Less than 150% (1500)
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_pay_loan_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let amount = 1000;
+    //     let collateral_amount = 1500;
+    //     peer_pulse::create_loan(account, @0x1, amount, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, collateral_amount);
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, amount);
+
+    //     peer_pulse::pay_loan(borrower, @0x1, @peer_purse_addr, amount);
+
+    //     let debt = peer_pulse::get_debt(signer::address_of(borrower), @0x1);
+    //     assert!(debt == 0, 5000);
+    //     let collateral = peer_pulse::get_collateral(signer::address_of(borrower), @0x1);
+    //     assert!(collateral == 0, 5001);
+    //     let lender_balance = coin::balance<AptosCoin>(@peer_purse_addr);
+    //     assert!(lender_balance >= amount, 5002);
+
+    //     let events = borrow_global<EventHandles>(@peer_purse_addr);
+    //     let repaid_events = event::emitted_events<LoanRepaid>(&events.loan_repaid_handle);
+    //     assert!(vector::length(&repaid_events) == 1, 5003);
+    //     let repaid_event = vector::borrow(&repaid_events, 0);
+    //     assert!(repaid_event.borrower == signer::address_of(borrower), 5004);
+    //     assert!(repaid_event.amount == amount, 5005);
+
+    //     let released_events = event::emitted_events<CollateralReleased>(&events.collateral_released_handle);
+    //     assert!(vector::length(&released_events) == 1, 5006);
+    //     let released_event = vector::borrow(&released_events, 0);
+    //     assert!(released_event.borrower == signer::address_of(borrower), 5007);
+    //     assert!(released_event.amount == collateral_amount, 5008);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_LOAN_NOT_FOUND)]
+    // fun test_pay_loan_no_debt(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::pay_loan(borrower, @0x1, @peer_purse_addr, 1000);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_REPAYMENT_EXCEEDS_DEBT)]
+    // fun test_pay_loan_exceeds_debt(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1500);
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+    //     peer_pulse::pay_loan(borrower, @0x1, @peer_purse_addr, 2000);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // fun test_update_min_collateral_ratio_success(account: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let new_ratio = 20000;
+    //     peer_pulse::update_min_collateral_ratio(account, new_ratio);
+    //     let ratio = peer_pulse::get_min_collateral_ratio();
+    //     assert!(ratio == new_ratio, 6000);
+    // }
+
+    // #[test(account = @peer_purse_addr, other = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_NOT_OWNER)]
+    // fun test_update_min_collateral_ratio_not_owner(account: &signer, other: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(other, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::update_min_collateral_ratio(other, 20000);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_INVALID_RATIO)]
+    // fun test_update_min_collateral_ratio_invalid_ratio(account: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::update_min_collateral_ratio(account, 5000);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // fun test_set_owner_success(account: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let new_owner = @0x123;
+    //     peer_pulse::set_owner(account, new_owner);
+    //     let owner = peer_pulse::get_owner();
+    //     assert!(owner == new_owner, 7000);
+    // }
+
+    // #[test(account = @peer_purse_addr, other = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_NOT_OWNER)]
+    // fun test_set_owner_not_owner(account: &signer, other: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(other, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::set_owner(other, @0x456);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_INVALID_OWNER)]
+    // fun test_set_owner_invalid_owner(account: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::set_owner(account, @0x0);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_liquidate_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let amount = 1000;
+    //     let collateral_amount = 1000; // Under 150% (1500)
+    //     peer_pulse::create_loan(account, @0x1, amount, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, collateral_amount);
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, amount);
+
+    //     peer_pulse::liquidate(account, signer::address_of(borrower), @0x1);
+
+    //     let debt = peer_pulse::get_debt(signer::address_of(borrower), @0x1);
+    //     assert!(debt == 0, 8000);
+    //     let collateral = peer_pulse::get_collateral(signer::address_of(borrower), @0x1);
+    //     assert!(collateral == 0, 8001);
+    //     let caller_balance = coin::balance<AptosCoin>(@peer_purse_addr);
+    //     assert!(caller_balance >= collateral_amount, 8002);
+
+    //     let events = borrow_global<EventHandles>(@peer_purse_addr);
+    //     let released_events = event::emitted_events<CollateralReleased>(&events.collateral_released_handle);
+    //     assert!(vector::length(&released_events) == 1, 8003);
+    //     let event = vector::borrow(&released_events, 0);
+    //     assert!(event.borrower == signer::address_of(borrower), 8004);
+    //     assert!(event.amount == collateral_amount, 8005);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_LOAN_NOT_FOUND)]
+    // fun test_liquidate_no_loan(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::liquidate(account, signer::address_of(borrower), @0x1);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // #[expected_failure(abort_code = E_LOAN_NOT_ELIGIBLE_FOR_LIQUIDATION)]
+    // fun test_liquidate_not_undercollateralized(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1500);
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+    //     peer_pulse::liquidate(account, signer::address_of(borrower), @0x1);
+    // }
+
+    // #[test(account = @peer_purse_addr, aptos_framework = @0x1)]
+    // fun test_calculate_required_collateral(account: &signer, aptos_framework: &signer) acquires LendingPlatform {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     peer_pulse::init_module(account);
+
+    //     let amount = 1000;
+    //     let required = peer_pulse::calculate_required_collateral(amount);
+    //     assert!(required == (amount * 15000) / 10000, 9000);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_is_undercollateralized_true(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1000); // Under 150%
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+
+    //     let is_under = peer_pulse::is_undercollateralized(signer::address_of(borrower), @0x1);
+    //     assert!(is_under, 10000);
+    // }
+
+    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    // fun test_is_undercollateralized_false(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
+    //     setup_account(aptos_framework, 1000000);
+    //     setup_account(account, 1000000);
+    //     setup_account(borrower, 1000000);
+    //     peer_pulse::init_module(account);
+    //     peer_pulse::create_loan(account, @0x1, 1000, 100);
+    //     peer_pulse::lock_collateral(borrower, @0x1, 1500); // Meets 150%
+    //     peer_pulse::accept_loan(borrower, @peer_purse_addr, @0x1, 1000);
+
+    //     let is_under = peer_pulse::is_undercollateralized(signer::address_of(borrower), @0x1);
+    //     assert!(!is_under, 10001);
+    // }
 }
