@@ -74,7 +74,7 @@ export default function CreateLoan() {
             ACCOUNT_ADDR,
             token,
             Math.trunc(+amount * 10 ** 8),
-            BigInt(duration),
+            BigInt(+duration * 86400).toString(),
           ],
         },
       });
@@ -111,7 +111,12 @@ export default function CreateLoan() {
           balance={balance}
         />
 
-        <NumberInput defaultValue={duration} onChange={setDuration} />
+        <NumberInput
+          defaultValue={duration}
+          label="Duration(days)"
+          placeholder="Enter Duration in days"
+          onChange={setDuration}
+        />
         <NumberInput
           defaultValue={amount}
           onChange={setAmount}
