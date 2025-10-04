@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ACCOUNT,
-  ACCOUNT_ADDR,
-  MODULE_NAME,
-  tokens,
-} from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
@@ -49,7 +44,7 @@ export default function LockCollaterial() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
-          functionArguments: [ACCOUNT_ADDR, selectedToken.address, +amount],
+          functionArguments: [selectedToken.address, +amount],
         },
       });
 

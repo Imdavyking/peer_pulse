@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  ACCOUNT,
-  ACCOUNT_ADDR,
-  MODULE_NAME,
-  tokens,
-} from "../../utils/constants";
+import { ACCOUNT, MODULE_NAME, tokens } from "../../utils/constants";
 import TokenDropdown from "../../components/TokenDropdown";
 import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
@@ -74,7 +69,6 @@ export default function PayLoan() {
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::pay_loan`,
           functionArguments: [
-            ACCOUNT_ADDR,
             selectedLoanToken.address,
             lender,
             Math.trunc(+amount * 10 ** 8),
