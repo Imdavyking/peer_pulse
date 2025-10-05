@@ -559,15 +559,12 @@ module peer_purse_addr::peer_pulse {
         assert!(platform_balance >= collateral_amount, 3001);
     }
 
-    // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
-    // #[expected_failure(abort_code = E_ZERO_AMOUNT)]
-    // fun test_lock_collateral_zero_amount(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform {
-    //     setup_account(aptos_framework, 1000000);
-    //     setup_account(account, 1000000);
-    //     setup_account(borrower, 1000000);
-    //     peer_pulse::init_module(account);
-    //     peer_pulse::lock_collateral(borrower, @0x1, 0);
-    // }
+    #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
+    #[expected_failure(abort_code = E_ZERO_AMOUNT)]
+    fun test_lock_collateral_zero_amount(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform {
+        test_init_module_success(aptos_framework,account);
+        lock_collateral(borrower, @0x1, 0);
+    }
 
     // #[test(account = @peer_purse_addr, borrower = @0x123, aptos_framework = @0x1)]
     // fun test_accept_loan_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
