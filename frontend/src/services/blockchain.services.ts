@@ -17,9 +17,9 @@ export const getUserBalance = async (
 ): Promise<number> => {
   if (token == tokens[0].address) {
     try {
-      const balance = await aptos.getAccountCoinAmount({
+      const balance = await aptos.getBalance({
         accountAddress: account.address,
-        coinType: "0x1::aptos_coin::AptosCoin",
+        asset: "0x1::aptos_coin::AptosCoin",
       });
       return balance / 10 ** 8;
     } catch (error) {
