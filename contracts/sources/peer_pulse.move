@@ -594,7 +594,7 @@ module peer_purse_addr::peer_pulse {
         assert!(borrower_balance >= amount, 4007);
 
         // let events = borrow_global<EventHandles>(@peer_purse_addr);
-        // let emitted_events = event::emitted_events<LoanAccepted>(&events.loan_accepted_handle);
+        // let emitted_events = event::emitted_events<LoanAccepted>();
         // assert!(vector::length(&emitted_events) == 1, 4008);
         // let event = vector::borrow(&emitted_events, 0);
         // assert!(event.borrower == signer::address_of(borrower), 4009);
@@ -646,13 +646,13 @@ module peer_purse_addr::peer_pulse {
         assert!(lender_balance >= amount, 5002);
 
         let events = borrow_global<EventHandles>(@peer_purse_addr);
-        // let repaid_events = event::emitted_events<LoanRepaid>(&events.loan_repaid_handle);
+        // let repaid_events = event::emitted_events<LoanRepaid>();
         // assert!(vector::length(&repaid_events) == 1, 5003);
         // let repaid_event = vector::borrow(&repaid_events, 0);
         // assert!(repaid_event.borrower == signer::address_of(borrower), 5004);
         // assert!(repaid_event.amount == amount, 5005);
 
-        // let released_events = event::emitted_events<CollateralReleased>(&events.collateral_released_handle);
+        // let released_events = event::emitted_events<CollateralReleased>();
         // assert!(vector::length(&released_events) == 1, 5006);
         // let released_event = vector::borrow(&released_events, 0);
         // assert!(released_event.borrower == signer::address_of(borrower), 5007);
