@@ -65,6 +65,7 @@ export default function CreateLoan() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
+          typeArguments: [],
           functionArguments: [
             token,
             Math.trunc(+amount * 10 ** 8),

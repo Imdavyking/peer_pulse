@@ -44,6 +44,7 @@ export default function LockCollaterial() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
+          typeArguments: [],
           functionArguments: [selectedToken.address, +amount],
         },
       });

@@ -27,7 +27,7 @@ export default function PayLoan() {
     const fetchDebt = async () => {
       if (!account) return;
       const debt = await getDebt({
-        borrower: account.address,
+        borrower: account.address.toString(),
         token: selectedLoanToken.address,
       });
       if (typeof debt === "undefined") {
@@ -43,7 +43,7 @@ export default function PayLoan() {
     (async () => {
       if (!account) return;
 
-      setLender(account.address);
+      setLender(account.address.toString());
 
       if (lender === "") return;
 
@@ -68,8 +68,10 @@ export default function PayLoan() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::pay_loan`,
+          typeArguments: [],
           functionArguments: [
             selectedLoanToken.address,
+
             lender,
             Math.trunc(+amount * 10 ** 8),
           ],

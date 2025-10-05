@@ -31,7 +31,7 @@ export default function AcceptLoanForm() {
     const fetchCollaterial = async () => {
       if (!account) return;
       const collaterial = await getCollaterial({
-        borrower: account.address,
+        borrower: account.address.toString(),
         token: selectedLoanToken.address,
       });
       if (typeof collaterial === "undefined") {
@@ -46,7 +46,7 @@ export default function AcceptLoanForm() {
   useEffect(() => {
     const fetchDetails = async () => {
       if (!account) return;
-      const lender = account.address;
+      const lender = account.address.toString();
       setLender(lender);
       const balance = await getLiquidity({
         lender,
@@ -75,6 +75,7 @@ export default function AcceptLoanForm() {
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::accept_loan`,
+          typeArguments: [],
           functionArguments: [lender, selectedLoanToken.address, +amount],
         },
       });
