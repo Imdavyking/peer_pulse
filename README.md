@@ -31,7 +31,7 @@ It enables users to supply liquidity, borrow assets with collateral, repay loans
 
 ### Initialization
 
-- `initialize(account: &signer)` – Deploys the platform with a resource account and registers AptosCoin.
+- `init_module(account: &signer)` – Deploys the platform with a resource account and registers AptosCoin.
 
 ### Getters (View Functions)
 
