@@ -52,6 +52,3 @@ export default tseslint.config({
   },
 });
 ```
-
-pnpm papi add -w wss://westend-asset-hub-rpc.polkadot.io westend
-pnpm papi ink add "./src/assets/json/PeerPulse.json"

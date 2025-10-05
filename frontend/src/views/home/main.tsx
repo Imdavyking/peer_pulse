@@ -60,7 +60,7 @@ export default function Home() {
             </h2>
             <ul className="space-y-3 text-gray-300">
               <li>🔐 No interest — truly DeFi</li>
-              <li>⚖️ Fully collateralized using DOT or stablecoins</li>
+              <li>⚖️ Fully collateralized using APT or stablecoins</li>
               <li>💸 Borrow Tokens against your locked assets</li>
               <li>💼 No credit score, no central authority</li>
             </ul>
@@ -78,7 +78,7 @@ export default function Home() {
               How It Works
             </h2>
             <ol className="list-decimal list-inside space-y-3 text-gray-300">
-              <li>Deposit your DOT or stablecoins</li>
+              <li>Deposit your APT or stablecoins</li>
               <li>Open a loan by locking your collateral</li>
               <li>Receive Tokens in your wallet</li>
               <li>Repay anytime and withdraw your collateral</li>
