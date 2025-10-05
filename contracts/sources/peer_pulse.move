@@ -103,10 +103,10 @@ module peer_purse_addr::peer_pulse {
             resource_account: resource_addr,
         });
         move_to(account, EventHandles {
-            loan_created_handle: account::new_event_handle<LoanCreated>(&resource_signer),
-            loan_accepted_handle: account::new_event_handle<LoanAccepted>(&resource_signer),
-            loan_repaid_handle: account::new_event_handle<LoanRepaid>(&resource_signer),
-            collateral_released_handle: account::new_event_handle<CollateralReleased>(&resource_signer),
+            loan_created_handle: account::new_event_handle<LoanCreated>(account),
+            loan_accepted_handle: account::new_event_handle<LoanAccepted>(account),
+            loan_repaid_handle: account::new_event_handle<LoanRepaid>(account),
+            collateral_released_handle: account::new_event_handle<CollateralReleased>(account),
         });
         move_to(account, SignerCapability { cap });
 
@@ -273,8 +273,6 @@ module peer_purse_addr::peer_pulse {
             0
         };
         let required_collateral = (amount * platform.min_collateral_ratio) / 10000;
-        print(&required_collateral);
-        print(&collateral);
         assert!(collateral >= required_collateral, E_COLLATERAL_TOO_LOW);
 
         table::upsert(liquidity_table, token, liquidity - amount);
