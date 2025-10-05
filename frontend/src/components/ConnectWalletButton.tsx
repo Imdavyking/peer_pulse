@@ -35,7 +35,9 @@ const ConnectWalletButton = () => {
         onClick={handleMainClick}
         className="px-5 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer"
       >
-        {account ? shortenAddress(account.address) : "Connect Wallet"}
+        {account
+          ? shortenAddress(account.address.toString())
+          : "Connect Wallet"}
       </button>
 
       {/* Connect Modal */}
