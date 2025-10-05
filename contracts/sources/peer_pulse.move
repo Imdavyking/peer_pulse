@@ -10,6 +10,7 @@ module peer_purse_addr::peer_pulse {
     use aptos_framework::aptos_account;
     use aptos_framework::resource_account;
     use aptos_framework::timestamp;
+    use std::debug::print;
 
     // Error codes
     const E_ZERO_AMOUNT: u64 = 1;
@@ -272,6 +273,8 @@ module peer_purse_addr::peer_pulse {
             0
         };
         let required_collateral = (amount * platform.min_collateral_ratio) / 10000;
+        print(&required_collateral);
+        print(&collateral);
         assert!(collateral >= required_collateral, E_COLLATERAL_TOO_LOW);
 
         table::upsert(liquidity_table, token, liquidity - amount);
@@ -457,8 +460,6 @@ module peer_purse_addr::peer_pulse {
         });
     }
 
-    #[test_only]
-    use std::debug::print;
   
 
 
@@ -570,13 +571,12 @@ module peer_purse_addr::peer_pulse {
     fun test_accept_loan_success(account: &signer, borrower: &signer, aptos_framework: &signer) acquires LendingPlatform, EventHandles, SignerCapability {
         test_init_module_success(aptos_framework,account);
 
-        let amount = 1000;
+        let amount = 100;
         let collateral_amount = 1500; // 150% of amount (min_collateral_ratio = 15000)
         create_loan(account, @0x1, amount, 100);
         let coins = coin::withdraw<AptosCoin>(account, collateral_amount);
         coin::deposit(signer::address_of(borrower), coins);
         lock_collateral(borrower, @0x1, collateral_amount);
-
         accept_loan(borrower, @peer_purse_addr, @0x1, amount);
 
         let debt = get_debt(signer::address_of(borrower), @0x1);
@@ -634,12 +634,10 @@ module peer_purse_addr::peer_pulse {
         let amount = 1000;
         let collateral_amount = 1500;
         create_loan(account, @0x1, amount, 100);
-        let collateral_amount = 1000;
         let coins = coin::withdraw<AptosCoin>(account, collateral_amount);
         coin::deposit(signer::address_of(borrower), coins);
         lock_collateral(borrower, @0x1, collateral_amount);
         accept_loan(borrower, @peer_purse_addr, @0x1, amount);
-
         pay_loan(borrower, @0x1, @peer_purse_addr, amount);
 
         let debt = get_debt(signer::address_of(borrower), @0x1);
