@@ -6,7 +6,7 @@ const ConnectWalletButton = () => {
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isDisconnectModalOpen, setIsDisconnectModalOpen] = useState(false);
 
-  const shortenAddress = (addr: any) => {
+  const shortenAddress = (addr: string) => {
     return addr ? `${addr.slice(0, 6)}...${addr.slice(-4)}` : "";
   };
 
@@ -79,7 +79,7 @@ const ConnectWalletButton = () => {
             <p className="text-gray-600 mb-6">
               Are you sure you want to disconnect{" "}
               <span className="font-semibold">
-                {shortenAddress(account.address)}
+                {shortenAddress(account.address.toString())}
               </span>
               ?
             </p>
