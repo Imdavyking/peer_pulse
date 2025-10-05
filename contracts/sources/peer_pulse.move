@@ -11,6 +11,7 @@ module peer_purse_addr::peer_pulse {
     use aptos_framework::resource_account;
     use aptos_framework::timestamp;
     use std::debug::print;
+    use std::string::utf8;
 
     // Error codes
     const E_ZERO_AMOUNT: u64 = 1;
@@ -512,6 +513,7 @@ module peer_purse_addr::peer_pulse {
 
         let events = borrow_global<EventHandles>(@peer_purse_addr);
         let emitted_events = event::emitted_events<LoanCreated>();
+        print(&utf8(b"events on created"));
         print(&emitted_events); // shows []
         // assert!(vector::length(&emitted_events) == 1, 2002);
         // let event = vector::borrow(&emitted_events, 0);
