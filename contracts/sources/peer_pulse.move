@@ -195,7 +195,7 @@ module peer_purse_addr::peer_pulse {
             table::borrow_mut(&mut platform.liquidity_pool, signer_addr)
         };
         let current_liquidity = *table::borrow_with_default(token_table, token, &0);
-        // table::upsert(token_table, token, current_liquidity + amount);
+        // table::upsert(token_table, token, current_liquidity + amount); -> buggy on react
 
         if (token == @aptos_framework) {
             let platform_balance_before = coin::balance<AptosCoin>(platform_addr);
