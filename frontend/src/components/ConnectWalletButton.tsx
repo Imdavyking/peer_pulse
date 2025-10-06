@@ -35,7 +35,7 @@ const ConnectWalletButton = () => {
         onClick={handleMainClick}
         className="px-5 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold shadow-lg hover:scale-105 transition-transform cursor-pointer"
       >
-        {account
+        {account && account.address
           ? shortenAddress(account.address.toString())
           : "Connect Wallet"}
       </button>
@@ -70,7 +70,7 @@ const ConnectWalletButton = () => {
       )}
 
       {/* Disconnect Confirmation Modal */}
-      {isDisconnectModalOpen && account && (
+      {isDisconnectModalOpen && account && account.address && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-2xl shadow-lg p-6 w-80">
             <h2 className="text-lg font-bold mb-4 text-gray-800">
