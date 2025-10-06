@@ -4,7 +4,7 @@ import TokenDropdown from "../../components/TokenDropdown";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { getUserBalance } from "../../services/blockchain.services";
+import { aptos, getUserBalance } from "../../services/blockchain.services";
 import { toast } from "react-toastify";
 
 interface Token {
@@ -40,13 +40,17 @@ export default function LockCollaterial() {
         toast.error("Please connect your wallet");
         return;
       }
-      await signAndSubmitTransaction({
+      const transactionResponse = await signAndSubmitTransaction({
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
           typeArguments: [],
           functionArguments: [selectedToken.address, +amount],
         },
+      });
+
+      await aptos.waitForTransaction({
+        transactionHash: transactionResponse.hash,
       });
 
       toast.success("Collateral locked successfully");

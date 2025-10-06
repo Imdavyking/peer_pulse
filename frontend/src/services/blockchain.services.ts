@@ -10,7 +10,7 @@ import { AccountInfo } from "@aptos-labs/wallet-adapter-core";
 
 const APTOS_NETWORK: Network = NetworkToNetworkName[Network.DEVNET];
 const config = new AptosConfig({ network: APTOS_NETWORK });
-const aptos = new Aptos(config);
+export const aptos = new Aptos(config);
 export const getUserBalance = async (
   account: AccountInfo,
   token: string

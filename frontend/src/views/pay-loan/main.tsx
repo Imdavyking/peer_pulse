@@ -5,7 +5,11 @@ import TextInput from "../../components/TextInput";
 import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
-import { getDebt, getUserBalance } from "../../services/blockchain.services";
+import {
+  aptos,
+  getDebt,
+  getUserBalance,
+} from "../../services/blockchain.services";
 import { toast } from "react-toastify";
 
 interface Token {
@@ -64,7 +68,7 @@ export default function PayLoan() {
         toast.error("Please connect your wallet");
         return;
       }
-      await signAndSubmitTransaction({
+      const transactionResponse = await signAndSubmitTransaction({
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::pay_loan`,
@@ -76,6 +80,10 @@ export default function PayLoan() {
             Math.trunc(+amount * 10 ** 8),
           ],
         },
+      });
+
+      await aptos.waitForTransaction({
+        transactionHash: transactionResponse.hash,
       });
 
       toast.success("Loan accepted successfully!");

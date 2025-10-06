@@ -6,6 +6,7 @@ import NumberInput from "../../components/NumberInput";
 import SubmitButton from "../../components/SubmitButton";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
+  aptos,
   getCollaterial,
   getLiquidity,
 } from "../../services/blockchain.services";
@@ -71,13 +72,17 @@ export default function AcceptLoanForm() {
         return;
       }
 
-      await signAndSubmitTransaction({
+      const transactionResponse = await signAndSubmitTransaction({
         sender: account.address,
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::accept_loan`,
           typeArguments: [],
           functionArguments: [lender, selectedLoanToken.address, +amount],
         },
+      });
+
+      await aptos.waitForTransaction({
+        transactionHash: transactionResponse.hash,
       });
 
       toast.success("Loan accepted successfully!");
