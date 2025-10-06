@@ -41,7 +41,7 @@ export default function Home() {
           >
             A decentralized protocol offering{" "}
             <strong>interest-free loans</strong> on the{" "}
-            <span className="text-pink-400">Polkadot</span> blockchain. Backed
+            <span className="text-pink-400">Aptos</span> blockchain. Backed
             by over-collateralized debt positions.
           </motion.p>
         </header>
