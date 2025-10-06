@@ -39,7 +39,7 @@ export default function AcceptLoanForm() {
         console.log("collateral is undefined");
         return;
       }
-      setCollaterial(collaterial.toString());
+      setCollaterial((+collaterial / 10 ** 8).toString());
     };
     fetchCollaterial();
   }, [account]);
@@ -58,7 +58,7 @@ export default function AcceptLoanForm() {
         console.log("balance is undefined");
         return;
       }
-      setBalance(balance.toString());
+      setBalance((+balance / 10 ** 8).toString());
     };
     fetchDetails();
   }, [account, selectedLoanToken, lender, loading]);
@@ -77,7 +77,11 @@ export default function AcceptLoanForm() {
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::accept_loan`,
           typeArguments: [],
-          functionArguments: [lender, selectedLoanToken.address, +amount],
+          functionArguments: [
+            lender,
+            selectedLoanToken.address,
+            Math.trunc(+amount * 10 ** 8),
+          ],
         },
       });
 

@@ -45,7 +45,10 @@ export default function LockCollaterial() {
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::lock_collateral`,
           typeArguments: [],
-          functionArguments: [selectedToken.address, +amount],
+          functionArguments: [
+            selectedToken.address,
+            Math.trunc(+amount * 10 ** 8),
+          ],
         },
       });
 

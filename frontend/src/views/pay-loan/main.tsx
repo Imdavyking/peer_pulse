@@ -38,7 +38,7 @@ export default function PayLoan() {
         console.log("collateral is undefined");
         return;
       }
-      setDebt(debt.toString());
+      setDebt((+debt / 10 ** 8).toString());
     };
     fetchDebt();
   }, [account]);
@@ -75,7 +75,6 @@ export default function PayLoan() {
           typeArguments: [],
           functionArguments: [
             selectedLoanToken.address,
-
             lender,
             Math.trunc(+amount * 10 ** 8),
           ],
