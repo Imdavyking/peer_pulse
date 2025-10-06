@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <AptosWalletAdapterProvider
-        optInWallets={["Petra", "Pontem Wallet", "Nightly", "MSafe"]}
+        optInWallets={["Petra", "Petra"]}
         autoConnect={true}
       >
         <ToastContainer />

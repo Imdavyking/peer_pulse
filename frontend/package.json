@@ -10,10 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aptos-labs/wallet-adapter-core": "7.4.0",
-    "@aptos-labs/ts-sdk": "5.1.0",
-    "@aptos-labs/wallet-adapter-ant-design": "5.2.0",
-    "@aptos-labs/wallet-adapter-react": "7.1.0",
+    "@aptos-labs/wallet-adapter-core": "^7.4.0",
+    "@aptos-labs/wallet-adapter-react": "^7.1.0",
+    "@aptos-labs/ts-sdk": "^5.1.0",
     "@mizuwallet-sdk/core": "1.4.0",
     "@apollo/client": "^3.12.8",
     "@react-three/drei": "^10.0.7",
