@@ -61,8 +61,21 @@ export default function CreateLoan() {
         return;
       }
 
+      console.log({
+        sender: account.address,
+        data: {
+          function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
+          typeArguments: [],
+          functionArguments: ["0x1", 10000000, 86400],
+          // functionArguments: [
+          //   token,
+          //   Math.trunc(+amount * 10 ** 8),
+          //   BigInt(Math.trunc(+duration * 86400)).toString(),
+          // ],
+        },
+      });
+
       const transactionResponse = await signAndSubmitTransaction({
-        sender: account.address.toString(),
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
           typeArguments: [],
@@ -71,6 +84,10 @@ export default function CreateLoan() {
             Math.trunc(+amount * 10 ** 8),
             BigInt(Math.trunc(+duration * 86400)).toString(),
           ],
+        },
+        options: {
+          maxGasAmount: 1000000000000,
+          gasUnitPrice: 100,
         },
       });
 
