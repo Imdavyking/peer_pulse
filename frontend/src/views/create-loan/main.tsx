@@ -85,10 +85,6 @@ export default function CreateLoan() {
             BigInt(Math.trunc(+duration * 86400)).toString(),
           ],
         },
-        options: {
-          maxGasAmount: 1000000000000,
-          gasUnitPrice: 100,
-        },
       });
 
       await aptos.waitForTransaction({
