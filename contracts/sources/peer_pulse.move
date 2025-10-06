@@ -197,22 +197,22 @@ module peer_purse_addr::peer_pulse {
         let current_liquidity = *table::borrow_with_default(token_table, token, &0);
         // table::upsert(token_table, token, current_liquidity + amount);
 
-        // if (token == @aptos_framework) {
-        //     let platform_balance_before = coin::balance<AptosCoin>(platform_addr);
-        //     let coins = coin::withdraw<AptosCoin>(account, amount);
-        //     coin::deposit(platform_addr, coins);
-        //     let platform_balance_after = coin::balance<AptosCoin>(platform_addr);
-        //     assert!(platform_balance_after >= platform_balance_before + amount, E_INSUFFICIENT_TRANSFERRED_VALUE);
-        // } else {
-        //     abort E_NOT_SUPPORTED_TOKEN;
-        // };
+        if (token == @aptos_framework) {
+            let platform_balance_before = coin::balance<AptosCoin>(platform_addr);
+            let coins = coin::withdraw<AptosCoin>(account, amount);
+            coin::deposit(platform_addr, coins);
+            let platform_balance_after = coin::balance<AptosCoin>(platform_addr);
+            assert!(platform_balance_after >= platform_balance_before + amount, E_INSUFFICIENT_TRANSFERRED_VALUE);
+        } else {
+            abort E_NOT_SUPPORTED_TOKEN;
+        };
 
         let event_handles = borrow_global_mut<EventHandles>(@peer_purse_addr);
-        // event::emit_event(&mut event_handles.loan_created_handle, LoanCreated {
-        //     lender: signer_addr,
-        //     token,
-        //     amount,
-        // });
+        event::emit_event(&mut event_handles.loan_created_handle, LoanCreated {
+            lender: signer_addr,
+            token,
+            amount,
+        });
     }
 
     // Lock collateral
