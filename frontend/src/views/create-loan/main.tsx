@@ -62,7 +62,7 @@ export default function CreateLoan() {
       }
 
       const transactionResponse = await signAndSubmitTransaction({
-        sender: account.address,
+        sender: account.address.toString(),
         data: {
           function: `${ACCOUNT}::${MODULE_NAME}::create_loan`,
           typeArguments: [],
