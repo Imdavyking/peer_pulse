@@ -4,6 +4,7 @@ module peer_purse_addr::peer_pulse {
     use aptos_framework::event;
     use aptos_framework::coin;
     use aptos_framework::aptos_coin::AptosCoin;
+    use std::simple_map::{SimpleMap,Self};
     use aptos_std::table::{Self, Table};
     use aptos_framework::account;
     use aptos_framework::aptos_coin;
@@ -32,9 +33,9 @@ module peer_purse_addr::peer_pulse {
 
     // Structs for storage
     struct LendingPlatform has key {
-        collateral: Table<address, Table<address, u64>>,
-        debt: Table<address, Table<address, u64>>,
-        liquidity_pool: Table<address, Table<address, u64>>,
+        collateral: Table<address, SimpleMap<address, u64>>,
+        debt: Table<address, SimpleMap<address, u64>>,
+        liquidity_pool: Table<address, SimpleMap<address, u64>>,
         active_loans: Table<address, vector<Loan>>,
         min_collateral_ratio: u64,
         owner: address,
@@ -195,7 +196,8 @@ module peer_purse_addr::peer_pulse {
             table::borrow_mut(&mut platform.liquidity_pool, signer_addr)
         };
         let current_liquidity = *table::borrow_with_default(token_table, token, &0);
-        // table::upsert(token_table, token, current_liquidity + amount); -> buggy on react
+        table::upsert(token_table, token, current_liquidity + amount);
+        //  liquidity_pool: address, Table<address, u64>,
 
         if (token == @aptos_framework) {
             let platform_balance_before = coin::balance<AptosCoin>(platform_addr);
