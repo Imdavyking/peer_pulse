@@ -14,7 +14,7 @@ export const tokens = [
   // },
 ];
 export const ACCOUNT =
-  "0xdcd4b40544c0284ed1fdbc3c83b2bfaa95c302d31742c39498172b14c13f6f1a";
+  "ea400f4887007247400249f62cadd6c53c85c3c579b22cebda692bb0f52580b8";
 export const MODULE_NAME = "peer_pulse";
 export const CONTRACT_ADDRESS = import.meta.env.VITE_CONTRACT_ADDRESS;
 export const WS_URL = import.meta.env.VITE_WS_URL;
